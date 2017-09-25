@@ -23,14 +23,12 @@ jobs:
     before_script:
         - mkdir ~/oqdata
     script:
-        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
-        - nosetests --with-doctest -xvs -a'!slow' openquake.server
-        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
-        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
-        - bin/oq webui migrate
-        - cat /tmp/webui*
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.engine
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.server
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.calculators
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.risklib
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commands
   - stage: tests
     env: DEMOS
     script:
@@ -52,6 +50,7 @@ install:
   - sudo rabbitmqctl add_user openquake openquake
   - sudo rabbitmqctl add_vhost openquake
   - sudo rabbitmqctl set_permissions -p openquake openquake ".*" ".*" ".*"
+  - sed -i 's/oq_distribute = futures/oq_distribute = celery/g' oq-engine/openquake/engine/openquake.cfg
 
 before_script:
   - cd oq-engine
