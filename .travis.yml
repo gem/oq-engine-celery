@@ -48,6 +48,10 @@ install:
   - pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels
   - pip -q install wheels/*
   - pip -q install -e oq-engine
+  # Setup RabbitMQ user and hosts
+  - sudo rabbitmqctl add_user openquake openquake
+  - sudo rabbitmqctl add_vhost openquake
+  - sudo rabbitmqctl set_permissions -p openquake openquake ".*" ".*" ".*"
 
 before_script:
   - cd oq-engine
