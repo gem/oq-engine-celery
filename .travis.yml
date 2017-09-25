@@ -1,0 +1,56 @@
+sudo: required
+
+language: python
+
+python:
+ - "3.5"
+
+services:
+ - rabbitmq
+
+cache:
+  pip: true
+  directories:
+  - wheels
+
+env:
+  - OQ_DISTRIBUTE=celery
+
+jobs:
+  include:
+  - stage: tests
+    env: ENGINE
+    before_script:
+        - mkdir ~/oqdata
+    script:
+        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
+        - nosetests --with-doctest -xvs -a'!slow' openquake.server
+        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
+        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
+        - bin/oq webui migrate
+        - cat /tmp/webui*
+  - stage: tests
+    env: DEMOS
+    script:
+        - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
+        - bin/check_demos
+
+before_install:
+  - if [ "$TRAVIS_PULL_REQUEST_BRANCH" != "" ]; then BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BRANCH=$TRAVIS_BRANCH; fi
+
+install:
+  # pip do not cache data when requirements includes full http URLs, so we need to download
+  # the wheels first, put the folder in cache and then install the wheels from there.
+  # A second run of 'pip download' will download only the missing wheels. 
+  - git clone --depth=1 -b $BRANCH https://github.com/gem/oq-engine.git
+  - pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels
+  - pip -q install wheels/*
+  - pip -q install -e oq-engine
+
+before_script:
+  - cd oq-engine
+  - python -c'import platform; print(platform.platform()); import multiprocessing; print("#CPUs=%d" % multiprocessing.cpu_count())'
+  - celery worker --purge -Ofair --config openquake.engine.celeryconfig &
+  - python utils/celery-status
