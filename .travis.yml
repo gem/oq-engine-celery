@@ -20,12 +20,10 @@ jobs:
   include:
   - stage: tests
     env: ENGINE
-    before_script:
-        - mkdir ~/oqdata
     script:
         - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.engine
         - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.server
-        - travis_wait 30 OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.calculators
+        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.calculators
         - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.risklib
         - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
         - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commands
@@ -53,6 +51,7 @@ install:
   - sed -i 's/oq_distribute = futures/oq_distribute = celery/g' oq-engine/openquake/engine/openquake.cfg
 
 before_script:
+  - mkdir ~/oqdata
   - cd oq-engine
   - python -c'import platform; print(platform.platform()); import multiprocessing; print("#CPUs=%d" % multiprocessing.cpu_count())'
   - celery worker --purge -Ofair --config openquake.engine.celeryconfig &
