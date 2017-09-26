@@ -42,7 +42,7 @@ install:
   # pip do not cache data when requirements includes full http URLs, so we need to download
   # the wheels first, put the folder in cache and then install the wheels from there.
   # A second run of 'pip download' will download only the missing wheels. 
-  - git clone --depth=1 -b $BRANCH https://github.com/gem/oq-engine.git
+  - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
   - pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels
   - pip -q install wheels/*
   - pip -q install -e oq-engine
