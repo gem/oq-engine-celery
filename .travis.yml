@@ -2,10 +2,6 @@ sudo: required
 
 language: python
 
-python:
- - "2.7"
- - "3.5"
-
 services:
  - rabbitmq
 
@@ -20,10 +16,8 @@ env:
 
 jobs:
   include:
-  - stage: tests
-    python:
-     - "2.7"
-     - "3.5"
+  - stage: python2.7 tests
+    python: "2.7"
     script:
         - nosetests --with-doctest -xvs -a'!slow' openquake.engine
         - nosetests --with-doctest -xvs -a'!slow' openquake.server
@@ -31,9 +25,23 @@ jobs:
         - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
         - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
         - nosetests --with-doctest -xvs -a'!slow' openquake.commands
-  - stage: demos
+  - stage: python3.5 tests
+    python: "3.5"
+    script:
+        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
+        - nosetests --with-doctest -xvs -a'!slow' openquake.server
+        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
+        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
+  - stage: python2.7 demos
     python:
      - "2.7"
+    script:
+        - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
+        - bin/check_demos
+  - stage: python3.5 demos
+    python:
      - "3.5"
     script:
         - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
