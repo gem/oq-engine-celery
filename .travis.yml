@@ -15,19 +15,20 @@ cache:
   - wheels27
   - wheels35
 
+env:
+  - OQ_DISTRIBUTE=celery
+
 jobs:
   include:
   - stage: tests
-    env: ENGINE
     script:
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.engine
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.server
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.calculators
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.risklib
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
-        - OQ_DISTRIBUTE=celery nosetests --with-doctest -xvs -a'!slow' openquake.commands
+        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
+        - nosetests --with-doctest -xvs -a'!slow' openquake.server
+        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
+        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
+        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
   - stage: demos
-    env: DEMOS
     script:
         - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
         - bin/check_demos
