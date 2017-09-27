@@ -21,6 +21,9 @@ env:
 jobs:
   include:
   - stage: tests
+    python:
+     - "2.7"
+     - "3.5"
     script:
         - nosetests --with-doctest -xvs -a'!slow' openquake.engine
         - nosetests --with-doctest -xvs -a'!slow' openquake.server
@@ -29,6 +32,9 @@ jobs:
         - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
         - nosetests --with-doctest -xvs -a'!slow' openquake.commands
   - stage: demos
+    python:
+     - "2.7"
+     - "3.5"
     script:
         - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
         - bin/check_demos
