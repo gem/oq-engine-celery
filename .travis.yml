@@ -2,6 +2,11 @@ sudo: required
 
 language: python
 
+notifications:
+  email:
+    - michele@openquake.org
+    - daniele@openquake.org
+
 services:
  - rabbitmq
 
