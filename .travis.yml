@@ -27,24 +27,14 @@ jobs:
       - PYTHON=2.7
     python: "2.7"
     script:
-        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
-        - nosetests --with-doctest -xvs -a'!slow' openquake.server
-        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
-        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
+        - nosetests --with-doctest -xvs openquake
   - stage: tests
     env:
       - OQ_DISTRIBUTE=celery
       - PYTHON=3.5
     python: "3.5"
     script:
-        - nosetests --with-doctest -xvs -a'!slow' openquake.engine
-        - nosetests --with-doctest -xvs -a'!slow' openquake.server
-        - nosetests --with-doctest -xvs -a'!slow' openquake.calculators
-        - nosetests --with-doctest -xvs -a'!slow' openquake.risklib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commonlib
-        - nosetests --with-doctest -xvs -a'!slow' openquake.commands
+        - nosetests --with-doctest -xvs openquake
   - stage: demo
     env:
       - OQ_DISTRIBUTE=celery
