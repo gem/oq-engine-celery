@@ -74,4 +74,4 @@ before_script:
   - cd oq-engine
   - python -c'import platform; print(platform.platform()); import multiprocessing; print("#CPUs=%d" % multiprocessing.cpu_count())'
   - celery worker --purge -Ofair --config openquake.engine.celeryconfig &
-  - python utils/celery-status
+  - sleep 10 && python utils/celery-status
