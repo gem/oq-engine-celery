@@ -21,20 +21,6 @@ env:
 
 jobs:
   include:
-  - stage: tests
-    env:
-      - OQ_DISTRIBUTE=celery
-      - PYTHON=2.7
-    python: "2.7"
-    script:
-        - nosetests --with-doctest -xvs openquake
-  - stage: tests
-    env:
-      - OQ_DISTRIBUTE=celery
-      - PYTHON=3.5
-    python: "3.5"
-    script:
-        - nosetests --with-doctest -xvs openquake
   - stage: demo
     env:
       - OQ_DISTRIBUTE=celery
