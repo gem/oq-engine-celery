@@ -17,13 +17,13 @@ cache:
   - wheels35
 
 env:
-  - OQ_DISTRIBUTE=celery
+  - OQ_DISTRIBUTE=celery_zmq
 
 jobs:
   include:
   - stage: demo
     env:
-      - OQ_DISTRIBUTE=celery
+      - OQ_DISTRIBUTE=celery_zmq
       - PYTHON=3.5
     python: "3.5"
     script:
