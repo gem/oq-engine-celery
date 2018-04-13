@@ -13,7 +13,6 @@ services:
 cache:
   pip: true
   directories:
-  - wheels27
   - wheels35
 
 env:
@@ -38,7 +37,6 @@ install:
   # the wheels first, put the folder in cache and then install the wheels from there.
   # A second run of 'pip download' will download only the missing wheels. 
   - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip -q download -r oq-engine/requirements-py27-linux64.txt -d wheels27 && pip -q install wheels27/*; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels35 && pip -q install wheels35/*; fi
   - pip -q install -e oq-engine
   # Setup RabbitMQ user and hosts
@@ -52,4 +50,4 @@ before_script:
   - cd oq-engine
   - python -c'import platform; print(platform.platform()); import multiprocessing; print("#CPUs=%d" % multiprocessing.cpu_count())'
   - celery worker --purge -Ofair --config openquake.engine.celeryconfig &
-  - sleep 10 && python utils/celery-status
+  - sleep 10 && oq celery status
