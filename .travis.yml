@@ -27,7 +27,6 @@ jobs:
     python: "3.5"
     script:
         - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
-        - bin/check_demos
 
 before_install:
   - if [ "$TRAVIS_PULL_REQUEST_BRANCH" != "" ]; then BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BRANCH=$TRAVIS_BRANCH; fi
