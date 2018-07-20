@@ -13,7 +13,7 @@ services:
 cache:
   pip: true
   directories:
-  - wheels36
+  - wheels35
 
 env:
   - OQ_DISTRIBUTE=celery
@@ -23,7 +23,8 @@ jobs:
   - stage: demo
     env:
       - OQ_DISTRIBUTE=celery
-    python: "3.6"
+      - PYTHON=3.5
+    python: "3.5"
     script:
         - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
 
@@ -35,7 +36,7 @@ install:
   # the wheels first, put the folder in cache and then install the wheels from there.
   # A second run of 'pip download' will download only the missing wheels. 
   - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
-  - pip -q download -r oq-engine/requirements-py36-linux64.txt -d wheels36 && pip -q install wheels36/*
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels35 && pip -q install wheels35/*; fi
   - pip -q install -e oq-engine
   # Setup RabbitMQ user and hosts
   - sudo rabbitmqctl add_user openquake openquake
