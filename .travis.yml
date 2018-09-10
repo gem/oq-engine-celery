@@ -23,13 +23,6 @@ jobs:
   include:
   - stage: demo
     python:
-      - "3.5"
-    env:
-      - OQ_DISTRIBUTE=celery
-    script:
-        - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
-  - stage: demo
-    python:
       - "3.6"
     env:
       - OQ_DISTRIBUTE=celery
