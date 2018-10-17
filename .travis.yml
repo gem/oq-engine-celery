@@ -12,11 +12,6 @@ services:
 
 before_install:
   - if [ "$TRAVIS_PULL_REQUEST_BRANCH" != "" ]; then BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BRANCH=$TRAVIS_BRANCH; fi
-
-install:
-  # pip do not cache data when requirements includes full http URLs, so we need to download
-  # the wheels first, put the folder in cache and then install the wheels from there.
-  # A second run of 'pip download' will download only the missing wheels. 
   - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
   - docker-compose -p oqcluster up -d
 
@@ -24,6 +19,19 @@ before_script:
   - sleep 30 && docker ps -a
   - docker exec -ti oqcluster_master_1 oq celery status
 
-script:
-  - chmod 777 ./data  # User ID mapping may not match
-  - docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
+jobs:
+  include:
+  - stage: celery
+    env: NON_SHARED
+    install:
+      - docker-compose -f docker-compose.yml -p oqcluster up -d
+    script:
+      - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
+  - stage: celery
+    env: SHARED
+    install:
+      - chmod 777 ./data
+      - sed -i 's|shared_dir =|shared_dir = /io/data|' openquake.cfg
+      - docker-compose -f docker-compose-shared.yml -p oqcluster up -d
+    script:
+      - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
