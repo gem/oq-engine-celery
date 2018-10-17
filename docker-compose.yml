@@ -30,6 +30,7 @@ services:
       - oqnet
     depends_on:
       - rabbitmq
+      - master
 
 networks:
   oqnet:
