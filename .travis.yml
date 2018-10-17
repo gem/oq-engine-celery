@@ -21,8 +21,8 @@ install:
   - docker-compose -p oqcluster up -d
 
 before_script:
-  - sleep 10 && docker ps -a
+  - sleep 30 && docker ps -a
   - docker exec -ti oqcluster_master_1 oq celery status
 
 script:
-  - docker exec -ti oqcluster_master_1 /io/bin/run-demos.sh
+  - docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
