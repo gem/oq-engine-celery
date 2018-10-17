@@ -12,7 +12,7 @@ services:
     image: openquake/engine-master
     volumes:
       - ./oq-engine:/io
-      - ./openquake.cfg:/etc/openquake.cfg
+      - ./openquake.cfg:/etc/openquake/openquake.cfg
     networks:
       - oqnet
     ports:
@@ -22,7 +22,7 @@ services:
   worker:
     image: openquake/engine-worker
     volumes:
-      - ./openquake.cfg:/etc/openquake.cfg
+      - ./openquake.cfg:/etc/openquake/openquake.cfg
     entrypoint: ["./celery-wait.sh"]
     networks:
       - oqnet
