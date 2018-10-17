@@ -1,0 +1,34 @@
+version: '2'
+services:
+  rabbitmq:
+    image: rabbitmq:3
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=openquake 
+      - RABBITMQ_DEFAULT_USER=openquake
+      - RABBITMQ_DEFAULT_PASS=openquake
+    networks:
+      - oqnet
+  master:
+    image: openquake/engine-master
+    volumes:
+      - ./oq-engine:/io
+      - ./openquake.cfg:/etc/openquake.cfg
+    networks:
+      - oqnet
+    ports:
+      - 8800:8800
+    depends_on:
+      - rabbitmq
+  worker:
+    image: openquake/engine-worker
+    volumes:
+      - ./openquake.cfg:/etc/openquake.cfg
+    entrypoint: ["./celery-wait.sh"]
+    networks:
+      - oqnet
+    depends_on:
+      - master
+      - rabbitmq
+
+networks:
+  oqnet:
