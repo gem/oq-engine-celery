@@ -25,4 +25,5 @@ before_script:
   - docker exec -ti oqcluster_master_1 oq celery status
 
 script:
+  - chmod 777 ./data  # User ID mapping may not match
   - docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
