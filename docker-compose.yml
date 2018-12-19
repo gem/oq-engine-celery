@@ -7,30 +7,35 @@ services:
       - RABBITMQ_DEFAULT_USER=openquake
       - RABBITMQ_DEFAULT_PASS=openquake
     networks:
-      - oqnet
+      - cluster
   master:
     image: openquake/engine-master
     volumes:
+      - oqdata:/home/openquake/oqdata
       - ./oq-engine:/io/oq-engine
-      - ./openquake.cfg:/etc/openquake/openquake.cfg
+      - ./oq-engine/openquake:/opt/openquake/lib/python3.6/site-packages/openquake
     networks:
-      - oqnet
+      - cluster
     ports:
       - 8800:8800
     depends_on:
       - rabbitmq
   worker:
     image: openquake/engine-worker
+    volumes:
+      - oqdata:/home/openquake/oqdata:ro
+      - ./oq-engine/openquake:/opt/openquake/lib/python3.6/site-packages/openquake
     environment:
       - OQ_RABBITMQ_HOST=rabbitmq
-    volumes:
-      - ./openquake.cfg:/etc/openquake/openquake.cfg
     entrypoint: ["./celery-wait.sh"]
     networks:
-      - oqnet
+      - cluster
     depends_on:
       - rabbitmq
       - master
 
+volumes:
+  oqdata:
+
 networks:
-  oqnet:
+  cluster:

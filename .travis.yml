@@ -21,16 +21,8 @@ before_script:
 jobs:
   include:
   - stage: celery
-    env: NON_SHARED
-    install:
-      - docker-compose -f docker-compose.yml -p oqcluster up -d
-    script:
-      - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
-  - stage: celery
     env: SHARED
     install:
-      - chmod 777 ./data
-      - sed -i 's|shared_dir =|shared_dir = /io/data|' openquake.cfg
-      - docker-compose -f docker-compose-shared.yml -p oqcluster up -d
+      - docker-compose -p oqcluster up -d
     script:
       - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
