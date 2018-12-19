@@ -8,47 +8,21 @@ notifications:
     - daniele@openquake.org
 
 services:
- - rabbitmq
-
-cache:
-  pip: true
-  directories:
-  - wheels35
-  - wheels36
-
-env:
-  - OQ_DISTRIBUTE=celery
-
-jobs:
-  include:
-  - stage: demo
-    python:
-      - "3.6"
-    env:
-      - OQ_DISTRIBUTE=celery
-    script:
-        - time bin/run-demos.sh $TRAVIS_BUILD_DIR/oq-engine/demos
+ - docker
 
 before_install:
   - if [ "$TRAVIS_PULL_REQUEST_BRANCH" != "" ]; then BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BRANCH=$TRAVIS_BRANCH; fi
-
-install:
-  # pip do not cache data when requirements includes full http URLs, so we need to download
-  # the wheels first, put the folder in cache and then install the wheels from there.
-  # A second run of 'pip download' will download only the missing wheels. 
   - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.5 ]]; then pip -q download -r oq-engine/requirements-py35-linux64.txt -d wheels35 && pip -q install wheels35/*; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pip -q download -r oq-engine/requirements-py36-linux64.txt -d wheels36 && pip -q install wheels36/*; fi
-  - pip -q install -e oq-engine
-  # Setup RabbitMQ user and hosts
-  - sudo rabbitmqctl add_user openquake openquake
-  - sudo rabbitmqctl add_vhost openquake
-  - sudo rabbitmqctl set_permissions -p openquake openquake ".*" ".*" ".*"
-  - sed -i 's/oq_distribute = futures/oq_distribute = celery/g' oq-engine/openquake/engine/openquake.cfg
 
 before_script:
-  - mkdir ~/oqdata
-  - cd oq-engine
-  - python -c'import platform; print(platform.platform()); import multiprocessing; print("#CPUs=%d" % multiprocessing.cpu_count())'
-  - celery worker --purge -Ofair --config openquake.engine.celeryconfig &
-  - sleep 10 && oq celery status
+  - sleep 30 && docker ps -a
+  - docker exec -ti oqcluster_master_1 oq celery status
+
+jobs:
+  include:
+  - stage: celery
+    env: SHARED
+    install:
+      - docker-compose -p oqcluster up -d
+    script:
+      - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
