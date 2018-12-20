@@ -11,7 +11,7 @@ services:
   master:
     image: openquake/engine-master
     volumes:
-      - oqdata:/shared
+      - oqdata:/home/openquake/oqdata
       - ./oq-engine:/io/oq-engine
       - ./oq-engine/openquake:/opt/openquake/lib/python3.6/site-packages/openquake
     networks:
@@ -23,7 +23,7 @@ services:
   worker:
     image: openquake/engine-worker
     volumes:
-      - oqdata:/shared:ro
+      - oqdata:/home/openquake/oqdata:ro
       - ./oq-engine/openquake:/opt/openquake/lib/python3.6/site-packages/openquake
     environment:
       - OQ_RABBITMQ_HOST=rabbitmq
