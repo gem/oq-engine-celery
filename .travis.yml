@@ -25,4 +25,4 @@ jobs:
     install:
       - docker-compose -p oqcluster up -d
     script:
-      - time docker exec -u $(id) -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
+      - time docker exec -u $(id -u) -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
