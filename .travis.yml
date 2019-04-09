@@ -12,6 +12,7 @@ services:
 before_install:
   - if [ "$TRAVIS_PULL_REQUEST_BRANCH" != "" ]; then BRANCH=$TRAVIS_PULL_REQUEST_BRANCH; else BRANCH=$TRAVIS_BRANCH; fi
   - if [ "$(git ls-remote --heads https://github.com/gem/oq-engine.git ${BRANCH})" == "" ]; then BRANCH='master'; fi; git clone -b ${BRANCH} --depth=1 https://github.com/gem/oq-engine.git && echo "Running on oq-engine/${BRANCH}"
+  - pip install -U docker-compose
 
 before_script:
   - sleep 30 && docker ps -a
