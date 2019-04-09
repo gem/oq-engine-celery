@@ -27,5 +27,5 @@ jobs:
       - docker-compose -p oqcluster up -d
     script:
       # Set permissions on exported dir
-      - docker exec -u 0 -ti oqcluster_master_1 /bin/bash -c "chown -R 1000 /io/oq-engine"
+      - docker exec -u 0 -w /io -ti oqcluster_master_1 /bin/bash -c "chown -R 1000 oq-engine"
       - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
