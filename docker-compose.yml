@@ -6,6 +6,10 @@ services:
       - RABBITMQ_DEFAULT_VHOST=openquake 
       - RABBITMQ_DEFAULT_USER=openquake
       - RABBITMQ_DEFAULT_PASS=openquake
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
     networks:
       - cluster
   master:
