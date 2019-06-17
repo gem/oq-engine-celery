@@ -15,17 +15,27 @@ before_install:
   # Run against the latest docker-compose available
   - pip -q install -U docker-compose
 
-before_script:
-  - sleep 30 && docker ps -a
-  - docker exec -ti oqcluster_master_1 oq celery status
-
 jobs:
   include:
   - stage: celery
     env: SHARED
     install:
       - docker-compose -p oqcluster up -d
+    before_script:
+      - sleep 30 && docker ps -a
+      - docker exec -ti oqcluster_master_1 oq celery status
     script:
       # Set permissions on exported dir
       - docker exec -u 0 -w /io -ti oqcluster_master_1 /bin/bash -c "chown -R 1000 oq-engine"
       - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
+  - stage: packaging
+    env: EXEC
+    script:
+        - cd oq-engine
+        - ./.travis/py_shebangs.sh
+        - ./.travis/py_executables.sh
+  - stage: packaging
+    env: WHL
+    script:
+        - cd oq-engine
+        - ./.travis/packaging.sh
