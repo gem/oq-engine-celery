@@ -1,19 +1,7 @@
 version: '2'
 services:
-  rabbitmq:
-    image: rabbitmq:3
-    environment:
-      - RABBITMQ_DEFAULT_VHOST=openquake 
-      - RABBITMQ_DEFAULT_USER=openquake
-      - RABBITMQ_DEFAULT_PASS=openquake
-    ulimits:
-      nofile:
-        soft: "65536"
-        hard: "65536"
-    networks:
-      - cluster
   master:
-    image: openquake/engine-master
+    image: openquake/engine-master-zmq
     volumes:
       - oqdata:/home/openquake/oqdata
       - ./oq-engine:/io/oq-engine
@@ -22,20 +10,14 @@ services:
       - cluster
     ports:
       - 8800:8800
-    depends_on:
-      - rabbitmq
   worker:
-    image: openquake/engine-worker
+    image: openquake/engine-worker-zmq
     volumes:
       - oqdata:/home/openquake/oqdata:ro
       - ./oq-engine/openquake:/opt/openquake/lib/python3.6/site-packages/openquake
-    environment:
-      - OQ_RABBITMQ_HOST=rabbitmq
-    entrypoint: ["./celery-wait.sh"]
     networks:
       - cluster
     depends_on:
-      - rabbitmq
       - master
 
 volumes:
