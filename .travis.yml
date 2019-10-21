@@ -17,10 +17,22 @@ before_install:
 
 jobs:
   include:
-  - stage: celery
-    env: SHARED
+  - stage: cluster
+    env: CELERY
     install:
-      - docker-compose -p oqcluster up -d
+      - docker-compose -f docker-compose.yml -f docker-compose.celery.yml -p oqcluster up -d
+    before_script:
+      - sleep 30 && docker ps -a
+      - docker exec -ti oqcluster_master_1 oq celery status
+    script:
+      # Set permissions on exported dir
+      - docker exec -u 0 -w /io -ti oqcluster_master_1 /bin/bash -c "chown -R 1000 oq-engine"
+      - time docker exec -ti oqcluster_master_1 /io/oq-engine/bin/run-demos.sh /io/oq-engine/demos
+      - curl http://localhost:8800/v1/calc/list
+  - stage: cluster
+    env: ZMQ
+    install:
+      - docker-compose -f docker-compose.yml -p oqcluster up -d
     before_script:
       - sleep 30 && docker ps -a
       - docker exec -ti oqcluster_master_1 oq celery status
