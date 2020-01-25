@@ -4,7 +4,6 @@ dist: xenial
 notifications:
   email:
     - michele@openquake.org
-    - daniele@openquake.org
 
 services:
  - docker
