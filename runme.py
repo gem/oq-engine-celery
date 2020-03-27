@@ -1,3 +1,3 @@
 #!env python3
 
-print("Done!")
+print("Done")
