@@ -1,7 +1,7 @@
 version: '2'
 services:
   master:
-    image: openquake/engine-master-zmq
+    image: openquake/engine-master-zmq:nightly
     volumes:
       - oqdata:/home/openquake/oqdata
       - ./oq-engine:/io/oq-engine
@@ -20,7 +20,7 @@ services:
     ports:
       - 8800:8800
   worker:
-    image: openquake/engine-worker-zmq
+    image: openquake/engine-worker-zmq:nightly
     volumes:
       - oqdata:/home/openquake/oqdata:ro
       - ./oq-engine/openquake/baselib:/opt/openquake/lib/python3.6/site-packages/openquake/baselib
